@@ -11,10 +11,11 @@ contract('Exchange', ([deployer, feeAccount, user1, user2]) => {
     let exchange;
     let token;
     const feePercent = 10;
+    const totalSupply = tokens(1000000);
 
     beforeEach(async () => {
         exchange = await Exchange.new(feeAccount, feePercent);
-        token = await Token.new(exchange.address);
+        token = await Token.new(exchange.address, totalSupply);
 
     })
 
@@ -118,7 +119,6 @@ contract('Exchange', ([deployer, feeAccount, user1, user2]) => {
         describe('success', () => {
 
             beforeEach(async() => {
-                await token.approve(exchange.address, amount, {from: user1});
                 result = await exchange.depositToken(token.address, amount, {from: user1});
             })
 
@@ -146,12 +146,7 @@ contract('Exchange', ([deployer, feeAccount, user1, user2]) => {
 
             it('fails when trying to deposit Token to ETHER address',  async () => {
                 await exchange.depositToken(ETHER_ADDRESS, amount, {from: user1}).should.be.rejectedWith(EVM_REVERT);
-            })
-
-            /* it('fails when no tokens are approved', async () => {
-                await exchange.depositToken(token.address, amount, {from: user1}).should.be.rejectedWith(EVM_REVERT);
-            }) */
-            
+            })            
         })
             
     })
